@@ -20,4 +20,4 @@ app.get('/', async (request: Request, response: Response) => {
   response.send(data);
 });
 
-export const api = functions.https.onRequest(app);
+export const api = functions.region('asia-northeast3').https.onRequest(app);
