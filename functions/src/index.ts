@@ -1,23 +1,8 @@
 import * as functions from 'firebase-functions';
-import express, { Request, Response } from 'express';
-import * as admin from 'firebase-admin';
+import app from './app';
+import router from './controller';
 
-admin.initializeApp();
-const store = admin.firestore();
+app.use('/', router);
 
-const app = express();
-
-app.get('/', async (request: Request, response: Response) => {
-  const testRef = store.collection('test');
-  testRef.add({
-    createdAt: new Date(),
-  });
-  const data = await testRef
-    .get()
-    .then((snapshot) =>
-      snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-    );
-  response.send(data);
-});
-
-export const api = functions.region('asia-northeast3').https.onRequest(app);
+const region = 'asia-northeast3';
+export const api = functions.region(region).https.onRequest(app);
