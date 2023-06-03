@@ -1,23 +1,16 @@
 import { Request, Response, RequestHandler, NextFunction } from 'express';
-import store from '../lib/store';
 
-export const doTest: RequestHandler = async (
+export const getItem: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
+  const { itemId, optionId } = req.params;
+  console.log(itemId, optionId);
+
   try {
-    const testRef = store.collection('test');
-    testRef.add({
-      createdAt: new Date(),
-    });
-    const data = await testRef
-      .get()
-      .then((snapshot) =>
-        snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
-      );
-    res.status(200).json(data);
-  } catch (e) {
-    next(e);
+    res.status(200).json({});
+  } catch (error) {
+    next(error);
   }
 };
