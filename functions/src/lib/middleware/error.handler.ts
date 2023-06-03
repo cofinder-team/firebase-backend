@@ -1,4 +1,5 @@
 import { Request, Response, ErrorRequestHandler, NextFunction } from 'express';
+import * as logger from 'firebase-functions/logger';
 
 import {
   BadRequestException,
@@ -24,7 +25,8 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
-  console.log(err);
+  logger.log(err);
+
   const exception = convertToHttpException(err);
   res.status(exception.code);
   return res.json(HttpException.parse(exception));
