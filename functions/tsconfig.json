@@ -7,7 +7,9 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false
   },
   "compileOnSave": true,
   "include": ["src"]
