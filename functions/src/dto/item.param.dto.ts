@@ -10,5 +10,5 @@ export class ItemParamDto {
   @Expose()
   @Transform(({ value }) => Number(value))
   @IsNumber()
-  optionId: string;
+  optionId: number;
 }
