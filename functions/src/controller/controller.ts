@@ -11,21 +11,26 @@ export const getItem: RequestHandler = async (
   const { care, unopened } = req.query;
 
   try {
-    store
+    const itemSnapshot = await store
       .collection('item')
       .where('itemId', '==', itemId)
       .where('optionId', '==', optionId)
       .where('care', '==', care)
       .where('unopened', '==', unopened)
+      .get();
+
+    if (itemSnapshot.empty) {
+      next(new BadRequestException('요청한 정보가 존재하지 않습니다.'));
+    }
+
+    const itemRef = itemSnapshot.docs[0].ref;
+    const item = itemSnapshot.docs[0].data();
+    const data = await itemRef
+      .collection('data')
       .get()
-      .then((querySnapshot) => {
-        if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data();
-          res.status(200).json(data);
-        } else {
-          next(new BadRequestException('요청한 정보가 존재하지 않습니다.'));
-        }
-      });
+      .then((dataSnapshot) => dataSnapshot.docs.map((doc) => doc.data()));
+
+    res.status(200).json({ ...item, data });
   } catch (error) {
     next(error);
   }
