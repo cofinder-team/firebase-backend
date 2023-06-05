@@ -30,3 +30,39 @@ export const getItem: RequestHandler = async (
     next(error);
   }
 };
+
+export const setData: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { itemId, optionId } = req.params;
+  const { care, unopened } = req.query;
+  const { date, low, mid, high } = req.body;
+
+  try {
+    const itemSnapshot = await store
+      .collection('item')
+      .where('itemId', '==', itemId)
+      .where('optionId', '==', optionId)
+      .where('care', '==', care)
+      .where('unopened', '==', unopened)
+      .get();
+
+    if (itemSnapshot.empty) {
+      next(new BadRequestException('요청한 정보가 존재하지 않습니다.'));
+    }
+
+    const itemRef = itemSnapshot.docs[0].ref;
+    const result = await itemRef.collection('data').doc(date).set({
+      date,
+      low,
+      mid,
+      high,
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
