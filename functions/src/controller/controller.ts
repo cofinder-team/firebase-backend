@@ -27,6 +27,7 @@ export const getItem: RequestHandler = async (
     const item = itemSnapshot.docs[0].data();
     const data = await itemRef
       .collection('data')
+      .orderBy('date')
       .get()
       .then((dataSnapshot) => dataSnapshot.docs.map((doc) => doc.data()));
 
