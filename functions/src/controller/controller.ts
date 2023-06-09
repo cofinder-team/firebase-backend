@@ -1,6 +1,7 @@
 import { Request, Response, RequestHandler, NextFunction } from 'express';
 import store from '../lib/database/store';
 import { NotFoundException } from '../lib/exception/http.exception';
+import { sendEmailCollect } from '../lib/slack/slack';
 
 export const getItem: RequestHandler = async (
   req: Request,
@@ -107,6 +108,8 @@ export const addEmail: RequestHandler = async (
       email,
       date: new Date(),
     });
+
+    sendEmailCollect(email);
 
     res.status(200).json(result);
   } catch (error) {
