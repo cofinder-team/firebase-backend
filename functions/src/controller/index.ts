@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { getItem, setData } from './controller';
+import { addEmail, getEmails, getItem, setData } from './controller';
 import {
   validateBody,
   validateParams,
   validateQuery,
 } from '../lib/middleware/validation.middleware';
 import { DataBodyDto, ItemParamDto, OptionQueryDto } from '../dto';
+import { EmailParamDto } from '../dto/email.param.dto';
 
 const router = Router();
 
@@ -23,5 +24,9 @@ router.post(
   validateBody(DataBodyDto),
   setData,
 );
+
+router.get('/email', getEmails);
+
+router.post('/email/:email', validateParams(EmailParamDto), addEmail);
 
 export default router;

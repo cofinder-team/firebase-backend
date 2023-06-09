@@ -72,3 +72,44 @@ export const setData: RequestHandler = async (
     next(error);
   }
 };
+
+export const getEmails: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const snapshot = await store.collection('email').get();
+    const emails = snapshot.docs.map((doc) => {
+      const { email, date } = doc.data();
+      const { _seconds, _nanoseconds } = date;
+      return {
+        email,
+        date: new Date(_seconds * 1000 + _nanoseconds / 1000),
+      };
+    });
+
+    res.status(200).json(emails);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addEmail: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const { email } = req.params;
+
+  try {
+    const result = await store.collection('email').doc(email).set({
+      email,
+      date: new Date(),
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
