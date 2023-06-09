@@ -1,6 +1,6 @@
 import { Request, Response, RequestHandler, NextFunction } from 'express';
 import store from '../lib/database/store';
-import { BadRequestException } from '../lib/exception/http.exception';
+import { NotFoundException } from '../lib/exception/http.exception';
 
 export const getItem: RequestHandler = async (
   req: Request,
@@ -20,7 +20,7 @@ export const getItem: RequestHandler = async (
       .get();
 
     if (itemSnapshot.empty) {
-      next(new BadRequestException('요청한 정보가 존재하지 않습니다.'));
+      next(new NotFoundException('요청한 정보가 존재하지 않습니다.'));
     }
 
     const itemRef = itemSnapshot.docs[0].ref;
@@ -56,7 +56,7 @@ export const setData: RequestHandler = async (
       .get();
 
     if (itemSnapshot.empty) {
-      next(new BadRequestException('요청한 정보가 존재하지 않습니다.'));
+      next(new NotFoundException('요청한 정보가 존재하지 않습니다.'));
     }
 
     const itemRef = itemSnapshot.docs[0].ref;
