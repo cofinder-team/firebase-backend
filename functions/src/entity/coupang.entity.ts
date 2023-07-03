@@ -1,9 +1,11 @@
+export type Price = number | null;
+
 export class Coupang {
   itemId: number;
   optionId: number;
   productId: number;
   vendorIds: number[];
-  price: number;
+  price: Price;
   time: Date;
 }
 
