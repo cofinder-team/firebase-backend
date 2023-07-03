@@ -4,7 +4,7 @@ import {
   getEmails,
   getItem,
   setData,
-  updareCoupang,
+  updateCoupang,
 } from './controller';
 import {
   validateBody,

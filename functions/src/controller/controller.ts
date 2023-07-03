@@ -132,7 +132,7 @@ export const updateCoupang: RequestHandler = async (
       target: CoupangTarget,
     ): Promise<Coupang[]> => {
       const collection = await promise;
-      await delay(Math.random() * 100);
+      await delay(Math.random() * 1000);
 
       const result = await collect(target);
       console.log(result);
