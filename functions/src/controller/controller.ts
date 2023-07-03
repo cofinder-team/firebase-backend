@@ -2,6 +2,10 @@ import { Request, Response, RequestHandler, NextFunction } from 'express';
 import store from '../lib/database/store';
 import { NotFoundException } from '../lib/exception/http.exception';
 import { sendEmailCollect } from '../lib/slack/slack';
+import targets from '../lib/coupang/targets';
+import collect from '../lib/coupang/collect';
+import { Coupang, CoupangTarget } from '../entity/coupang.entity';
+import delay from '../lib/util/delay';
 
 export const getItem: RequestHandler = async (
   req: Request,
@@ -112,6 +116,31 @@ export const addEmail: RequestHandler = async (
     sendEmailCollect(email);
 
     res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCoupang: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const collectEach = async (
+      promise: Promise<Coupang[]>,
+      target: CoupangTarget,
+    ): Promise<Coupang[]> => {
+      const collection = await promise;
+      await delay(Math.random() * 100);
+
+      const result = await collect(target);
+      console.log(result);
+      return [...collection, result];
+    };
+
+    const collection = await targets().reduce(collectEach, Promise.resolve([]));
+    res.status(200).json(collection);
   } catch (error) {
     next(error);
   }
