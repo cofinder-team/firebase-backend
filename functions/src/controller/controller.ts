@@ -36,7 +36,13 @@ export const getItem: RequestHandler = async (
       .get()
       .then((dataSnapshot) => dataSnapshot.docs.map((doc) => doc.data()));
 
-    res.status(200).json({ ...item, data });
+    const coupang = await itemRef
+      .collection('coupang')
+      .orderBy('date')
+      .get()
+      .then((coupangSnapshot) => coupangSnapshot.docs.map((doc) => doc.data()));
+
+    res.status(200).json({ ...item, data, coupang });
   } catch (error) {
     next(error);
   }
@@ -139,8 +145,30 @@ export const updateCoupang: RequestHandler = async (
       return [...collection, result];
     };
 
+    const updateEach = async (object: Coupang): Promise<void> => {
+      const { itemId, optionId, price, time } = object;
+      const date = new Date(time).toISOString().split('T')[0];
+
+      const items = await store
+        .collection('item')
+        .where('itemId', '==', itemId)
+        .where('optionId', '==', optionId)
+        .get();
+
+      await Promise.all(
+        items.docs.map(async (doc) => {
+          await doc.ref.collection('coupang').doc(date).set({
+            date,
+            price,
+          });
+        }),
+      );
+    };
+
     const collection = await targets().reduce(collectEach, Promise.resolve([]));
-    res.status(200).json(collection);
+    const result = await Promise.all(collection.map(updateEach));
+
+    res.status(200).json(result);
   } catch (error) {
     next(error);
   }
