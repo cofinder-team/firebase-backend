@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { addEmail, getEmails, getItem, setData } from './controller';
+import {
+  addEmail,
+  getEmails,
+  getItem,
+  setData,
+  updateCoupang,
+} from './controller';
 import {
   validateBody,
   validateParams,
@@ -28,5 +34,7 @@ router.post(
 router.get('/email', getEmails);
 
 router.post('/email/:email', validateParams(EmailParamDto), addEmail);
+
+router.get('/update', updateCoupang);
 
 export default router;

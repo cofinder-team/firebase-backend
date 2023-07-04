@@ -2,6 +2,7 @@ import { Request, Response, RequestHandler, NextFunction } from 'express';
 import store from '../lib/database/store';
 import { NotFoundException } from '../lib/exception/http.exception';
 import { sendEmailCollect } from '../lib/slack/slack';
+import update from '../lib/coupang/update';
 
 export const getItem: RequestHandler = async (
   req: Request,
@@ -32,7 +33,13 @@ export const getItem: RequestHandler = async (
       .get()
       .then((dataSnapshot) => dataSnapshot.docs.map((doc) => doc.data()));
 
-    res.status(200).json({ ...item, data });
+    const coupang = await itemRef
+      .collection('coupang')
+      .orderBy('date')
+      .get()
+      .then((coupangSnapshot) => coupangSnapshot.docs.map((doc) => doc.data()));
+
+    res.status(200).json({ ...item, data, coupang });
   } catch (error) {
     next(error);
   }
@@ -111,6 +118,19 @@ export const addEmail: RequestHandler = async (
 
     sendEmailCollect(email);
 
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCoupang: RequestHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await update();
     res.status(200).json(result);
   } catch (error) {
     next(error);
