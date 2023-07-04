@@ -12,4 +12,5 @@ export const coupang = functions
   .region(region)
   .runWith({ timeoutSeconds: 540 })
   .pubsub.schedule('0 * * * *')
+  .timeZone('Asia/Seoul')
   .onRun(() => update());
