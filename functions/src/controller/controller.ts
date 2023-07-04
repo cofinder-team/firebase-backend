@@ -36,7 +36,13 @@ export const getItem: RequestHandler = async (
       .get()
       .then((dataSnapshot) => dataSnapshot.docs.map((doc) => doc.data()));
 
-    res.status(200).json({ ...item, data });
+    const coupang = await itemRef
+      .collection('coupang')
+      .orderBy('date')
+      .get()
+      .then((coupangSnapshot) => coupangSnapshot.docs.map((doc) => doc.data()));
+
+    res.status(200).json({ ...item, data, coupang });
   } catch (error) {
     next(error);
   }
