@@ -3,6 +3,7 @@ import store from '../lib/database/store';
 import { NotFoundException } from '../lib/exception/http.exception';
 import { sendEmailCollect } from '../lib/slack/slack';
 import update from '../lib/coupang/update';
+import { convertDate } from '../lib/util/dateUtil';
 
 export const getItem: RequestHandler = async (
   req: Request,
@@ -27,6 +28,7 @@ export const getItem: RequestHandler = async (
 
     const itemRef = itemSnapshot.docs[0].ref;
     const item = itemSnapshot.docs[0].data();
+
     const data = await itemRef
       .collection('data')
       .orderBy('date')
@@ -39,7 +41,9 @@ export const getItem: RequestHandler = async (
       .get()
       .then((coupangSnapshot) => coupangSnapshot.docs.map((doc) => doc.data()));
 
-    res.status(200).json({ ...item, data, coupang });
+    res
+      .status(200)
+      .json({ ...item, data, coupang, time: convertDate(item.time) });
   } catch (error) {
     next(error);
   }
@@ -90,10 +94,9 @@ export const getEmails: RequestHandler = async (
     const snapshot = await store.collection('email').get();
     const emails = snapshot.docs.map((doc) => {
       const { email, date } = doc.data();
-      const { _seconds, _nanoseconds } = date;
       return {
         email,
-        date: new Date(_seconds * 1000 + _nanoseconds / 1000),
+        date: convertDate(date),
       };
     });
 
