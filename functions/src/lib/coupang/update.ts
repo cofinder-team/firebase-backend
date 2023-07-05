@@ -29,6 +29,7 @@ const update = async (): Promise<void> => {
 
     await Promise.all(
       items.docs.map(async (doc) => {
+        await doc.ref.update({ time });
         await doc.ref.collection('coupang').doc(date).set({
           date,
           price,
