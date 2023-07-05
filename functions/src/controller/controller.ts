@@ -41,9 +41,9 @@ export const getItem: RequestHandler = async (
       .get()
       .then((coupangSnapshot) => coupangSnapshot.docs.map((doc) => doc.data()));
 
-    res
-      .status(200)
-      .json({ ...item, data, coupang, time: convertDate(item.time) });
+    const time: Date | null = item.time ? convertDate(item.time) : null;
+
+    res.status(200).json({ ...item, data, coupang, time });
   } catch (error) {
     next(error);
   }
